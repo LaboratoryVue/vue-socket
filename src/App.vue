@@ -7,7 +7,7 @@
           <input type="text" name="message" v-model="message">
         </div>
         <div class="form-group">
-          <button @click="onSend()" class="btn btn-info">send message</button>
+          <button @click="onSend()" class="btn btn-info text-capitalize" :disabled="disabled">send message</button>
         </div>
         <div class="form-group">
           <p class="text-success">{{ answer }}</p>
@@ -23,9 +23,14 @@
     name: 'app',
     data() {
       return {
-        message: '',
-        answer: '',
+        message: null,
+        answer: null,
         ws: null
+      }
+    },
+    computed: {
+      disabled() {
+        return this.message === null || this.message === '';
       }
     },
     methods: {
@@ -40,7 +45,7 @@
       this.ws.onerror = event => console.log(event);
       this.ws.onmessage = message => {
         this.answer = message.data;
-        this.message = '';
+        this.message = null;
       };
     }
   }
