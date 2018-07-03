@@ -19,6 +19,9 @@
 
 <script>
 
+  const wsURL = `ws://rocket.pelidev.com/ws/game`;
+  const echoURL = `wss://echo.websocket.org/`;
+
   export default {
     name: 'app',
     data() {
@@ -39,7 +42,7 @@
       }
     },
     created() {
-      this.ws = new WebSocket('wss://echo.websocket.org/');
+      this.ws = new WebSocket(wsURL);
       this.ws.onopen = () => console.log(`ws подключенно`);
       this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
       this.ws.onerror = event => console.log(event);
