@@ -10,6 +10,9 @@
           <button @click="onSend()" class="btn btn-info text-capitalize" :disabled="disabled">send message</button>
         </div>
         <div class="form-group">
+          <button @click="onGet()" class="btn btn-info text-capitalize">get data</button>
+        </div>
+        <div class="form-group">
           <p class="text-success">{{ answer }}</p>
         </div>
       </div>
@@ -19,8 +22,11 @@
 
 <script>
 
+  import axios from 'axios';
+
   const wsURL = `ws://rocket.pelidev.com/ws/game`;
   const echoURL = `wss://echo.websocket.org/`;
+  const httpURL = `http://rocket.pelidev.com/api/game/current`;
 
   export default {
     name: 'app',
@@ -39,6 +45,9 @@
     methods: {
       onSend() {
         this.ws.send(this.message);
+      },
+      onGet() {
+        axios.get(httpURL).then(data => console.log(data.data)).catch(e => console.log(e));
       }
     },
     created() {
