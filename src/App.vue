@@ -30,18 +30,40 @@
     created() {
       this.ws = new WebSocket(wsURL);
       this.ws.onopen = () => {
-        axios.get(httpURL)
-          .then(data => {
-            this.game = data.data;
-          })
-          .catch(e => console.log(e));
+        axios.get(httpURL).then(data => this.game = data.data).catch(e => console.log(e));
       };
       this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
       this.ws.onerror = event => console.log(event);
       this.ws.onmessage = event => {
         const data = JSON.parse(event.data);
+        axios.get(httpURL)
+          .then(data => {
+            this.game = data.data;
+            // const colors = parseInt(data.data.Colors)
+            const color = Array.from(data.data.Colors)[Math.floor(parseFloat(data.Data.WinNum))];
+            switch(color) {
+              let curr = null;
+              case color === '1':
+                curr = 'green';
+                break;
+              case color === '2':
+                curr = 'red';
+                break;
+              case color === '3':
+                curr = 'black';
+                break;
+              case color === '4':
+                curr = 'yelow';
+                break;
+              default:
+                curr = 'white';
+            }
+            console.log(curr);
+          })
+          .catch(e => console.log(e));
         if (data.Event === 'winNumber') {
           this.win = Math.floor(parseFloat(data.Data.WinNum));
+          //
         }
       };
     }
@@ -67,5 +89,6 @@
     margin-bottom: 0;
     font-size: 1.4rem;
     padding: .4rem;
+    font-weight: 700;
   }
 </style>
