@@ -2,12 +2,9 @@
   <div class="container" id="app">
     <div class="row">
       <div class="col">
-        <h2 class="text-capitalize mb-4">websocket</h2>
-        <div class="form-group">
-          <button @click="onSend()" class="btn btn-info text-capitalize">send message</button>
-        </div>
-        <div class="form-group">
-          <p class="text-success">{{ win }}</p>
+        <h2 class="text-capitalize my-4">websocket</h2>
+        <div class="output">
+          <p class="output__number">{{ win }}</p>
         </div>
       </div>
     </div>
@@ -27,21 +24,7 @@
       return {
         ws: null,
         game: null,
-        state: null
-      }
-    },
-    computed: {
-      win() {
-        // if (this.state.Event === 'winNumberHash')
-        // if (this.state.Event === 'winNumber') {
-        //   return this.state.Data.WinNum
-        // }
-        return this.state;
-      }
-    },
-    methods: {
-      onSend() {
-        this.ws.send(this.message);
+        win: null
       }
     },
     created() {
@@ -56,8 +39,10 @@
       this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
       this.ws.onerror = event => console.log(event);
       this.ws.onmessage = event => {
-        this.state = event.data
-        console.log(event.data);
+        const data = JSON.parse(event.data);
+        if (data.Event === 'winNumber') {
+          this.win = Math.floor(parseFloat(data.Data.WinNum));
+        }
       };
     }
   }
@@ -69,7 +54,18 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  button {
-    cursor: pointer;
+  .output {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    border: .1rem solid #000;
+    border-radius: .4rem;
+    min-height: 80px;
+  }
+  .output__number {
+    margin-bottom: 0;
+    font-size: 1.4rem;
+    padding: .4rem;
   }
 </style>
