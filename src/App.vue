@@ -2,20 +2,16 @@
   <div class="container" id="app">
     <div class="row">
       <div class="col">
-        <HomePage msg="Welcome to Your Vue.js App" />
+        <h2>websocket</h2>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import HomePage from './components/HomePage.vue'
 
   export default {
-    name: 'app',
-    components: {
-      HomePage
-    }
+    name: 'app'
   }
 </script>
 
