@@ -2,18 +2,12 @@
   <div class="container" id="app">
     <div class="row">
       <div class="col">
-        <h2>websocket</h2>
+        <h2 class="text-capitalize mb-4">websocket</h2>
         <div class="form-group">
-          <input type="text" name="message" v-model="message">
+          <button @click="onSend()" class="btn btn-info text-capitalize">send message</button>
         </div>
         <div class="form-group">
-          <button @click="onSend()" class="btn btn-info text-capitalize" :disabled="disabled">send message</button>
-        </div>
-        <div class="form-group">
-          <button @click="onGet()" class="btn btn-info text-capitalize">get data</button>
-        </div>
-        <div class="form-group">
-          <p class="text-success">{{ answer }}</p>
+          <p class="text-success">{{ win }}</p>
         </div>
       </div>
     </div>
@@ -25,39 +19,45 @@
   import axios from 'axios';
 
   const wsURL = `ws://rocket.pelidev.com/ws/game`;
-  const echoURL = `wss://echo.websocket.org/`;
   const httpURL = `http://rocket.pelidev.com/api/game/current`;
 
   export default {
     name: 'app',
     data() {
       return {
-        message: null,
-        answer: null,
-        ws: null
+        ws: null,
+        game: null,
+        state: null
       }
     },
     computed: {
-      disabled() {
-        return this.message === null || this.message === '';
+      win() {
+        // if (this.state.Event === 'winNumberHash')
+        // if (this.state.Event === 'winNumber') {
+        //   return this.state.Data.WinNum
+        // }
+        return this.state;
       }
     },
     methods: {
       onSend() {
         this.ws.send(this.message);
-      },
-      onGet() {
-        axios.get(httpURL).then(data => console.log(data.data)).catch(e => console.log(e));
       }
     },
     created() {
       this.ws = new WebSocket(wsURL);
-      this.ws.onopen = () => console.log(`ws подключенно`);
+      this.ws.onopen = () => {
+        axios.get(httpURL)
+          .then(data => {
+            this.game = data.data;
+          })
+          .catch(e => console.log(e));
+      };
       this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
       this.ws.onerror = event => console.log(event);
-      this.ws.onmessage = message => {
-        this.answer = message.data;
-        this.message = null;
+      this.ws.onmessage = event => {
+        this.state = event.data
+        console.log(event.data);
       };
     }
   }
