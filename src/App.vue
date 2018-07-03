@@ -63,9 +63,9 @@ export default {
           this.color = color;
         })
         .catch(e => console.log(e));
-      const data = JSON.parse(event.data);
-      if (data.Event === 'winNumber') {
-        this.win = Math.floor(parseFloat(data.Data.WinNum));
+      const gameInfo = JSON.parse(event.data);
+      if (gameInfo.Event === 'winNumber') {
+        this.win = Math.floor(parseFloat(gameInfo.Data.WinNum));
       }
     };
   }
