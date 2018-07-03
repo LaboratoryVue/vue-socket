@@ -63,6 +63,7 @@ export default {
           this.color = color;
         })
         .catch(e => console.log(e));
+      // TODO здесь что-то неправильно
       const gameInfo = JSON.parse(event.data);
       if (gameInfo.Event === 'winNumber') {
         this.win = Math.floor(parseFloat(gameInfo.Data.WinNum));
