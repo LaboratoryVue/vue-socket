@@ -2,7 +2,7 @@
   <div class="container" id="app">
     <div class="row">
       <div class="col">
-        <h2 class="text-capitalize my-4">websocket</h2>
+        <h2 class="text-capitalize my-4">btc rocket</h2>
         <div class="output">
           <p :style="{ backgroundColor: color }" class="output__number">{{ win }}</p>
         </div>
@@ -22,33 +22,10 @@ export default {
   data() {
     return {
       ws: null,
-      game: null,
       win: null,
-      colors: null
+      game: null,
+      color: null
     };
-  },
-  computed: {
-    color() {
-      const index = this.colors.charAt(this.colors.length - this.win + 1);
-      let color = null;
-      switch (index) {
-        case '1':
-          color = 'green';
-          break;
-        case '2':
-          color = 'red';
-          break;
-        case '3':
-          color = 'black';
-          break;
-        case '4':
-          color = 'yelow';
-          break;
-        default:
-          color = 'white';
-      }
-      return color;
-    }
   },
   created() {
     this.ws = new WebSocket(wsURL);
@@ -61,13 +38,32 @@ export default {
     this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
     this.ws.onerror = event => console.log(event);
     this.ws.onmessage = event => {
-      const data = JSON.parse(event.data);
       axios
         .get(httpURL)
         .then(data => {
-          this.colors = data.data.Colors;
+          const colors = data.data.Colors;
+          const index = colors.charAt(colors.length - this.win);
+          let color = null;
+          switch (index) {
+            case '1':
+              color = 'green';
+              break;
+            case '2':
+              color = 'red';
+              break;
+            case '3':
+              color = 'black';
+              break;
+            case '4':
+              color = 'yelow';
+              break;
+            default:
+              color = 'white';
+          }
+          this.color = color;
         })
         .catch(e => console.log(e));
+      const data = JSON.parse(event.data);
       if (data.Event === 'winNumber') {
         this.win = Math.floor(parseFloat(data.Data.WinNum));
       }
