@@ -7,7 +7,7 @@
         <h4 class="text-capitalize text-center">current game id: <strong>{{ game.id }}</strong></h4>
         <div class="output">
           <p class="output__message">{{ game.message }}</p>
-          <p v-if="game.win" :style="{ backgroundColor: game.color }" class="output__number">{{ game.win }}</p>
+          <p v-show="game.win" :style="{ backgroundColor: game.color }" class="output__number">{{ game.win }}</p>
         </div>
       </div>
     </div>
