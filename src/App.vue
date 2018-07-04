@@ -3,9 +3,14 @@
     <div class="row">
       <div class="col">
         <h2 class="text-capitalize my-4">btc rocket</h2>
+        <h4>current game id {{ gameID }}</h4>
         <div class="output">
           <p :style="{ backgroundColor: color }" class="output__number">{{ win }}</p>
         </div>
+        <h6 class="mb-2">http info</h6>
+        <section>{{ game }}</section>
+        <h6 class="mb-2">ws info</h6>
+        <section>{{ gameWS }}</section>
       </div>
     </div>
   </div>
@@ -24,10 +29,13 @@ export default {
       ws: null,
       win: null,
       game: null,
-      color: null
+      gameWS: null,
+      color: null,
+      gameID: null
     };
   },
   methods: {
+    // => GET CURRENT WIN COLOR
     getColor(id) {
       let color = null;
       switch (id) {
@@ -41,12 +49,24 @@ export default {
           color = 'black';
           break;
         case '4':
-          color = 'yelow';
+          color = 'yellow';
           break;
         default:
           color = 'white';
       }
       return color;
+    },
+    // => GET DATA GAME
+    getNewGameData() {
+      axios
+        .get(httpURL)
+        .then(game => {
+          this.game = game.data;
+          this.gameID = game.data.ID;
+          // const colors = data.data.Colors;
+          // this.color = this.getColor(colors.charAt(colors.length - this.win));
+        })
+        .catch(e => console.log(e));
     }
   },
   created() {
@@ -54,25 +74,29 @@ export default {
     this.ws.onopen = () => {
       axios
         .get(httpURL)
-        .then(data => (this.game = data.data))
+        .then(currentGame => {
+          this.gameID = currentGame.data.ID;
+          this.game = currentGame.data;
+        })
         .catch(e => console.log(e));
     };
     this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
     this.ws.onerror = event => console.log(event);
+
+    // GET START AND AND DATA ABOUT CURRENT GAME
     this.ws.onmessage = event => {
-      axios
-        .get(httpURL)
-        .then(data => {
-          const colors = data.data.Colors;
-          const index = colors.charAt(colors.length - this.win);
-          this.color = this.getColor(index);
-        })
-        .catch(e => console.log(e));
-      // TODO здесь что-то неправильно
-      const gameInfo = JSON.parse(event.data);
-      if (gameInfo.Event === 'winNumber') {
-        this.win = Math.floor(parseFloat(gameInfo.Data.WinNum));
+      const gameEvent = JSON.parse(event.data);
+      if (gameEvent.Event === 'winNumberHash') {
+        console.log(`start game`);
+      } else if (gameEvent.Event === 'winNumber') {
+        console.log(`end game`);
       }
+      this.getNewGameData();
+      // const gameInfo = JSON.parse(event.data);
+      this.gameWS = JSON.parse(event.data);
+      // if (gameInfo.Event === 'winNumber') {
+      //   this.win = Math.floor(parseFloat(gameInfo.Data.WinNum));
+      // }
     };
   }
 };
