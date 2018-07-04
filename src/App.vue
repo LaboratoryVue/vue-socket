@@ -6,7 +6,8 @@
         <hr>
         <h4 class="text-capitalize text-center">current game id: <strong>{{ game.id }}</strong></h4>
         <div class="output">
-          <p :style="{ backgroundColor: game.color }" class="output__number">{{ game.win }}</p>
+          <p class="output__message">{{ game.message }}</p>
+          <p v-if="game.win" :style="{ backgroundColor: game.color }" class="output__number">{{ game.win }}</p>
         </div>
       </div>
     </div>
@@ -25,6 +26,7 @@ export default {
     return {
       ws: null,
       game: {
+        message: null,
         win: null,
         color: null,
         id: null
@@ -34,9 +36,8 @@ export default {
   methods: {
     // => GET CURRENT WIN COLOR
     getColor(value) {
-      const id = String(value);
       let color = null;
-      switch (id) {
+      switch (value) {
         case '1':
           color = 'green';
           break;
@@ -62,6 +63,7 @@ export default {
           this.game.id = game.data.ID;
           this.game.win = null;
           this.game.color = 'transparent';
+          this.game.message = 'game start!';
         })
         .catch(e => console.log(e));
     },
@@ -71,6 +73,7 @@ export default {
         .get(httpURL)
         .then(game => {
           this.game.id = game.data.ID;
+          this.game.message = 'the game continues ...';
         })
         .catch(e => console.log(e));
     },
@@ -79,6 +82,7 @@ export default {
       axios.get(httpURL)
       .then(game => {
         const colors = game.data.Colors;
+        this.game.message = 'the game is over! the winning score is: ';
         this.game.win = Math.floor(parseFloat(info.Data.WinNum));
         this.game.color = this.getColor(colors.charAt(colors.length - this.game.win));
       })
@@ -131,6 +135,13 @@ export default {
   border: 0.1rem solid #000;
   border-radius: 0.4rem;
   min-height: 80px;
+}
+.output__message {
+  margin-bottom: 0;
+  text-transform: capitalize;
+  font-weight: 700;
+  margin-right: .6rem;
+  font-size: 1.2rem;
 }
 .output__number {
   margin-bottom: 0;
