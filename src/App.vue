@@ -50,7 +50,7 @@ export default {
           color = 'orange';
           break;
         default:
-          color = 'white';
+          color = 'transparent';
       }
       return color;
     },
@@ -61,6 +61,7 @@ export default {
         .then(game => {
           this.game.id = game.data.ID;
           this.game.win = null;
+          this.game.color = 'transparent';
         })
         .catch(e => console.log(e));
     },
