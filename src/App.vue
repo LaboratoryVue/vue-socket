@@ -3,14 +3,11 @@
     <div class="row">
       <div class="col">
         <h2 class="text-capitalize my-4">btc rocket</h2>
-        <h4 class="text-capitalize text-center">current game id: <strong>{{ gameID }}</strong></h4>
+        <hr>
+        <h4 class="text-capitalize text-center">current game id: <strong>{{ game.id }}</strong></h4>
         <div class="output">
-          <p :style="{ backgroundColor: color }" class="output__number">{{ win }}</p>
+          <p :style="{ backgroundColor: game.color }" class="output__number">{{ game.win }}</p>
         </div>
-        <h6 class="mb-2">http info</h6>
-        <section>{{ game }}</section>
-        <h6 class="mb-2">ws info</h6>
-        <section>{{ gameWS }}</section>
       </div>
     </div>
   </div>
@@ -27,12 +24,11 @@ export default {
   data() {
     return {
       ws: null,
-      win: null,
-      game: null,
-      gameWS: null,
-      color: null,
-      colors: null,
-      gameID: null
+      game: {
+        win: null,
+        color: null,
+        id: null
+      }
     };
   },
   methods: {
@@ -50,35 +46,34 @@ export default {
           color = 'black';
           break;
         case '4':
-          color = 'yellow';
+          color = 'orange';
           break;
         default:
           color = 'white';
       }
       return color;
     },
-    // => GET CURRENT GAME
-    getCurrentGameData() {
-      axios
-        .get(httpURL)
-        .then(currentGame => {
-          this.gameID = currentGame.data.ID;
-          this.game = currentGame.data;
-        })
-        .catch(e => console.log(e));
-    },
-    // => GET DATA GAME
+    // => GET NEW GAME DATA
     getNewGameData() {
       axios
         .get(httpURL)
         .then(game => {
-          this.game = game.data; // TODO remove at the end
-          this.gameID = game.data.ID;
-          this.colors = game.data.Colors;
+          this.game.id = game.data.ID;
         })
         .catch(e => console.log(e));
+    },
+    // => GET END GAME DATA
+    getEndGameData(info) {
+      axios.get(httpURL)
+      .then(game => {
+        const colors = game.data.Colors;
+        this.game.win = Math.floor(parseFloat(info.Data.WinNum));
+        this.game.color = this.getColor(colors.charAt(colors.length - this.game.win));
+      })
+      .catch(e => console.log(e));
     }
   },
+
   created() {
 
     // START
@@ -86,20 +81,18 @@ export default {
 
     // OPEN CONNECTION
     this.ws.onopen = () => {
-      this.getCurrentGameData();
+      this.getNewGameData();
     };
 
     // GET START AND END DATA ABOUT CURRENT GAME
     this.ws.onmessage = event => {
       const gameInfo = JSON.parse(event.data);
       if (gameInfo.Event === 'winNumberHash') {
-        // START GAME
+        // => START GAME
         this.getNewGameData();
-      } else if (gameInfo.Event === 'winNumber') {
-        // END GAME
-        const winNumber = Math.floor(parseFloat(gameInfo.Data.WinNum));
-        this.color = this.getColor(this.colors.charAt(this.colors.length - winNumber));
-        this.win = winNumber;
+      } else {
+        // => END GAME
+        this.getEndGameData(gameInfo);
       }
     };
 
@@ -130,7 +123,7 @@ export default {
 .output__number {
   margin-bottom: 0;
   font-size: 1.4rem;
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0.9rem 0.2rem;
   font-weight: 700;
   border-radius: 0.4rem;
   color: white;
