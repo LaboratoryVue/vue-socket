@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col">
         <h2 class="text-capitalize my-4">btc rocket</h2>
-        <h4>current game id {{ gameID }}</h4>
+        <h4 class="text-capitalize text-center">current game id: <strong>{{ gameID }}</strong></h4>
         <div class="output">
           <p :style="{ backgroundColor: color }" class="output__number">{{ win }}</p>
         </div>
@@ -31,6 +31,7 @@ export default {
       game: null,
       gameWS: null,
       color: null,
+      colors: null,
       gameID: null
     };
   },
@@ -56,22 +57,8 @@ export default {
       }
       return color;
     },
-    // => GET DATA GAME
-    getNewGameData() {
-      axios
-        .get(httpURL)
-        .then(game => {
-          this.game = game.data;
-          this.gameID = game.data.ID;
-          // const colors = data.data.Colors;
-          // this.color = this.getColor(colors.charAt(colors.length - this.win));
-        })
-        .catch(e => console.log(e));
-    }
-  },
-  created() {
-    this.ws = new WebSocket(wsURL);
-    this.ws.onopen = () => {
+    // => GET CURRENT GAME
+    getCurrentGameData() {
       axios
         .get(httpURL)
         .then(currentGame => {
@@ -79,25 +66,48 @@ export default {
           this.game = currentGame.data;
         })
         .catch(e => console.log(e));
+    },
+    // => GET DATA GAME
+    getNewGameData() {
+      axios
+        .get(httpURL)
+        .then(game => {
+          this.game = game.data; // TODO remove at the end
+          this.gameID = game.data.ID;
+          this.colors = game.data.Colors;
+        })
+        .catch(e => console.log(e));
+    }
+  },
+  created() {
+
+    // START
+    this.ws = new WebSocket(wsURL);
+
+    // OPEN CONNECTION
+    this.ws.onopen = () => {
+      this.getCurrentGameData();
     };
-    this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
+
+    // GET START AND END DATA ABOUT CURRENT GAME
+    this.ws.onmessage = event => {
+      const gameInfo = JSON.parse(event.data);
+      if (gameInfo.Event === 'winNumberHash') {
+        // START GAME
+        this.getNewGameData();
+      } else if (gameInfo.Event === 'winNumber') {
+        // END GAME
+        const winNumber = Math.floor(parseFloat(gameInfo.Data.WinNum));
+        this.color = this.getColor(this.colors.charAt(this.colors.length - winNumber));
+        this.win = winNumber;
+      }
+    };
+
+    // ERROR CONNECTION
     this.ws.onerror = event => console.log(event);
 
-    // GET START AND AND DATA ABOUT CURRENT GAME
-    this.ws.onmessage = event => {
-      const gameEvent = JSON.parse(event.data);
-      if (gameEvent.Event === 'winNumberHash') {
-        console.log(`start game`);
-      } else if (gameEvent.Event === 'winNumber') {
-        console.log(`end game`);
-      }
-      this.getNewGameData();
-      // const gameInfo = JSON.parse(event.data);
-      this.gameWS = JSON.parse(event.data);
-      // if (gameInfo.Event === 'winNumber') {
-      //   this.win = Math.floor(parseFloat(gameInfo.Data.WinNum));
-      // }
-    };
+    // CLOSE CONNECTION
+    this.ws.onclose = event => console.log(`ws закрыто по причине ${event}`);
   }
 };
 </script>
