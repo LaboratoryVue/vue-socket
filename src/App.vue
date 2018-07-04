@@ -121,7 +121,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -132,23 +132,25 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  border: 0.1rem solid #000;
+  border: 0.1rem solid firebrick;
   border-radius: 0.4rem;
   min-height: 80px;
-}
-.output__message {
-  margin-bottom: 0;
-  text-transform: capitalize;
-  font-weight: 700;
-  margin-right: .6rem;
-  font-size: 1.2rem;
-}
-.output__number {
-  margin-bottom: 0;
-  font-size: 1.4rem;
-  padding: 0.4rem 0.9rem 0.2rem;
-  font-weight: 700;
-  border-radius: 0.4rem;
-  color: white;
+
+  &__message {
+    margin-bottom: 0;
+    text-transform: capitalize;
+    font-weight: 700;
+    margin-right: .6rem;
+    font-size: 1.2rem;
+  }
+
+  &__number {
+    margin-bottom: 0;
+    font-size: 1.4rem;
+    padding: 0.4rem 0.9rem 0.2rem;
+    font-weight: 700;
+    border-radius: 0.4rem;
+    color: white;
+  }
 }
 </style>
