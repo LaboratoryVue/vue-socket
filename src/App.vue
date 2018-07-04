@@ -27,6 +27,28 @@ export default {
       color: null
     };
   },
+  methods: {
+    getColor(id) {
+      let color = null;
+      switch (id) {
+        case '1':
+          color = 'green';
+          break;
+        case '2':
+          color = 'red';
+          break;
+        case '3':
+          color = 'black';
+          break;
+        case '4':
+          color = 'yelow';
+          break;
+        default:
+          color = 'white';
+      }
+      return color;
+    }
+  },
   created() {
     this.ws = new WebSocket(wsURL);
     this.ws.onopen = () => {
@@ -43,24 +65,7 @@ export default {
         .then(data => {
           const colors = data.data.Colors;
           const index = colors.charAt(colors.length - this.win);
-          let color = null;
-          switch (index) {
-            case '1':
-              color = 'green';
-              break;
-            case '2':
-              color = 'red';
-              break;
-            case '3':
-              color = 'black';
-              break;
-            case '4':
-              color = 'yelow';
-              break;
-            default:
-              color = 'white';
-          }
-          this.color = color;
+          this.color = this.getColor(index);
         })
         .catch(e => console.log(e));
       // TODO здесь что-то неправильно
