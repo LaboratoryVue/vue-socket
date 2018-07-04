@@ -54,14 +54,26 @@ export default {
       }
       return color;
     },
-    // => GET NEW GAME DATA
-    getNewGameData() {
+    // => GET CURRENT GAME DATA
+    getCurrentGameData() {
       axios
         .get(httpURL)
         .then(game => {
           console.log(`-- start game --`);
           console.log(game.data);
           this.game.id = game.data.ID;
+        })
+        .catch(e => console.log(e));
+    },
+    // => GET NEW GAME DATA
+    getNewGameData() {
+      axios
+        .get(httpURL)
+        .then(game => {
+          // console.log(`-- start game --`);
+          // console.log(game.data);
+          this.game.id = game.data.ID;
+          this.game.win = null;
         })
         .catch(e => console.log(e));
     },
@@ -94,11 +106,10 @@ export default {
       const gameInfo = JSON.parse(event.data);
       if (gameInfo.Event === 'winNumberHash') {
         // => START GAME
-        this.getNewGameData();
+        this.getCurrentGameData();
       } else {
         // => END GAME
         this.getEndGameData(gameInfo);
-        console.log(gameInfo);
       }
     };
 
