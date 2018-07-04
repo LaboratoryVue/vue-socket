@@ -33,7 +33,8 @@ export default {
   },
   methods: {
     // => GET CURRENT WIN COLOR
-    getColor(id) {
+    getColor(value) {
+      const id = String(value);
       let color = null;
       switch (id) {
         case '1':
@@ -58,6 +59,8 @@ export default {
       axios
         .get(httpURL)
         .then(game => {
+          console.log(`-- start game --`);
+          console.log(game.data);
           this.game.id = game.data.ID;
         })
         .catch(e => console.log(e));
@@ -66,6 +69,8 @@ export default {
     getEndGameData(info) {
       axios.get(httpURL)
       .then(game => {
+        console.log(`-- end game --`);
+        console.log(game.data);
         const colors = game.data.Colors;
         this.game.win = Math.floor(parseFloat(info.Data.WinNum));
         this.game.color = this.getColor(colors.charAt(colors.length - this.game.win));
@@ -93,6 +98,7 @@ export default {
       } else {
         // => END GAME
         this.getEndGameData(gameInfo);
+        console.log(gameInfo);
       }
     };
 
