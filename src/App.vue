@@ -92,7 +92,7 @@ export default {
 
     // OPEN CONNECTION
     this.ws.onopen = () => {
-      this.getNewGameData();
+      this.getCurrentGameData();
     };
 
     // GET START AND END DATA ABOUT CURRENT GAME
@@ -100,7 +100,7 @@ export default {
       const gameInfo = JSON.parse(event.data);
       if (gameInfo.Event === 'winNumberHash') {
         // => START GAME
-        this.getCurrentGameData();
+        this.getNewGameData();
       } else {
         // => END GAME
         this.getEndGameData(gameInfo);
