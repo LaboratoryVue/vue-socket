@@ -54,26 +54,22 @@ export default {
       }
       return color;
     },
-    // => GET CURRENT GAME DATA
-    getCurrentGameData() {
-      axios
-        .get(httpURL)
-        .then(game => {
-          console.log(`-- start game --`);
-          console.log(game.data);
-          this.game.id = game.data.ID;
-        })
-        .catch(e => console.log(e));
-    },
     // => GET NEW GAME DATA
     getNewGameData() {
       axios
         .get(httpURL)
         .then(game => {
-          // console.log(`-- start game --`);
-          // console.log(game.data);
           this.game.id = game.data.ID;
           this.game.win = null;
+        })
+        .catch(e => console.log(e));
+    },
+    // => GET CURRENT GAME DATA
+    getCurrentGameData() {
+      axios
+        .get(httpURL)
+        .then(game => {
+          this.game.id = game.data.ID;
         })
         .catch(e => console.log(e));
     },
@@ -81,8 +77,6 @@ export default {
     getEndGameData(info) {
       axios.get(httpURL)
       .then(game => {
-        console.log(`-- end game --`);
-        console.log(game.data);
         const colors = game.data.Colors;
         this.game.win = Math.floor(parseFloat(info.Data.WinNum));
         this.game.color = this.getColor(colors.charAt(colors.length - this.game.win));
